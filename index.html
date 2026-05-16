@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Kelechi David — Web Developer</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #ffffff;
+      --ink: #1a1410;
+      --muted: #6b6058;
+      --accent: #c8602a;
+      --accent-light: #e8c4a8;
+      --line: rgba(26,20,16,0.1);
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --mono: 'DM Mono', monospace;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--serif);
+      font-size: 18px;
+      line-height: 1.6;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    .cursor {
+      position: fixed; width: 10px; height: 10px;
+      background: var(--accent); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      mix-blend-mode: multiply;
+    }
+    .cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border: 1px solid var(--accent); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+      transition: width 0.25s, height 0.25s;
+      opacity: 0.5;
+    }
+    body:has(a:hover) .cursor-ring { width: 54px; height: 54px; opacity: 1; }
+
+    /* NAV */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--line);
+      transition: transform 0.4s ease;
+    }
+    .nav-logo {
+      font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink); text-decoration: none; opacity: 0.7;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--ink); text-decoration: none;
+      opacity: 0.5; transition: opacity 0.2s; position: relative;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0; right: 0;
+      height: 1px; background: var(--accent);
+      transform: scaleX(0); transform-origin: left; transition: transform 0.3s;
+    }
+    .nav-links a:hover { opacity: 1; }
+    .nav-links a:hover::after { transform: scaleX(1); }
+
+    /* HERO */
+    #hero {
+      min-height: 100vh;
+      display: grid; grid-template-columns: 1fr 1fr;
+      padding: 0 3rem;
+      position: relative; overflow: hidden;
+    }
+    .hero-left {
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding-bottom: 5rem;
+      animation: fadeUp 1s 0.2s both;
+    }
+    .hero-eyebrow {
+      font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 1.5rem;
+    }
+    .hero-name {
+      font-size: clamp(3.2rem, 6.5vw, 7.5rem);
+      font-weight: 300; line-height: 0.92; letter-spacing: -0.02em; margin-bottom: 1.8rem;
+    }
+    .hero-name em { font-style: italic; color: var(--accent); }
+    .hero-desc {
+      max-width: 40ch; font-size: 1.05rem; color: var(--muted); line-height: 1.85; margin-bottom: 3rem;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 0.8rem;
+      font-family: var(--mono); font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--ink);
+      border: 1px solid var(--ink); padding: 1rem 2rem;
+      text-decoration: none; width: fit-content;
+      transition: background 0.25s, color 0.25s; cursor: none;
+    }
+    .hero-cta:hover { background: var(--ink); color: #fff; }
+    .hero-cta .arrow { transition: transform 0.25s; }
+    .hero-cta:hover .arrow { transform: translateX(5px); }
+
+    .hero-right {
+      display: flex; align-items: center; justify-content: center;
+      animation: fadeUp 1s 0.5s both;
+    }
+    .hero-code-block {
+      font-family: var(--mono); font-size: 0.7rem; line-height: 2;
+      background: var(--ink); color: #a8d8a8;
+      padding: 2.5rem 3rem; width: 82%; position: relative;
+    }
+    .hero-code-block::before {
+      content: ''; position: absolute;
+      top: 16px; left: 16px; right: -16px; bottom: -16px;
+      border: 1px solid var(--accent); z-index: -1;
+    }
+    .code-comment { color: rgba(168,216,168,0.3); }
+    .code-keyword { color: #e8c47a; }
+    .code-string { color: #e8a87a; }
+    .code-var { color: #a8c8e8; }
+
+    .hero-scroll {
+      position: absolute; bottom: 2.5rem; left: 50%; transform: translateX(-50%);
+      font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--muted);
+      display: flex; flex-direction: column; align-items: center; gap: 0.7rem;
+      animation: fadeIn 1.5s 1.2s both;
+    }
+    .scroll-line {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--muted), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    /* SHARED */
+    section { padding: 7rem 3rem; }
+    .section-label {
+      font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.18em;
+      text-transform: uppercase; color: var(--accent); margin-bottom: 0.8rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .section-label::before { content: ''; display: block; width: 30px; height: 1px; background: var(--accent); }
+    .section-title {
+      font-size: clamp(2.2rem, 3.5vw, 3.8rem);
+      font-weight: 300; line-height: 1.1; letter-spacing: -0.01em; margin-bottom: 1rem;
+    }
+    .section-title em { font-style: italic; color: var(--accent); }
+    hr.divider { border: none; border-top: 1px solid var(--line); margin: 0 3rem; }
+
+    /* ABOUT */
+    #about { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+    .about-body { font-size: 1.05rem; color: var(--muted); line-height: 1.9; }
+    .about-body p + p { margin-top: 1.2em; }
+    .about-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: 3rem; }
+    .stat-num { font-size: 2.8rem; font-weight: 300; line-height: 1; color: var(--ink); letter-spacing: -0.03em; }
+    .stat-num span { font-style: italic; color: var(--accent); }
+    .stat-label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-top: 0.4rem; }
+    .skills-grid { display: flex; flex-wrap: wrap; gap: 0.65rem; margin-top: 2rem; }
+    .skill-tag {
+      font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em;
+      text-transform: uppercase; padding: 0.45rem 0.9rem;
+      border: 1px solid var(--line); color: var(--muted);
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .skill-tag:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* SERVICES */
+    #services { background: #fafafa; }
+    .services-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.8rem; margin-top: 3.5rem; }
+    .service-card {
+      padding: 2rem; border: 1px solid var(--line);
+      transition: border-color 0.25s, transform 0.25s;
+    }
+    .service-card:hover { border-color: var(--accent); transform: translateY(-3px); }
+    .service-icon { font-size: 1.6rem; margin-bottom: 1rem; }
+    .service-name { font-size: 1.15rem; font-weight: 400; margin-bottom: 0.5rem; }
+    .service-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; }
+
+    /* WORK — compact list style */
+    #work { padding-top: 5rem; }
+    .work-header { margin-bottom: 3rem; }
+    .projects-list { display: flex; flex-direction: column; gap: 0; }
+    .project-row {
+      display: grid;
+      grid-template-columns: 2fr 1fr auto;
+      align-items: center;
+      gap: 2rem;
+      padding: 1.8rem 0;
+      border-bottom: 1px solid var(--line);
+      text-decoration: none;
+      color: var(--ink);
+      transition: background 0.2s;
+      cursor: none;
+    }
+    .project-row:first-child { border-top: 1px solid var(--line); }
+    .project-row:hover .project-row-title { color: var(--accent); }
+    .project-row:hover .project-arrow { transform: translateX(5px); color: var(--accent); }
+    .project-row-left { display: flex; flex-direction: column; gap: 0.3rem; }
+    .project-row-title { font-size: 1.35rem; font-weight: 400; transition: color 0.2s; }
+    .project-row-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.6; max-width: 50ch; }
+    .project-row-meta {
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .project-row-tags { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+    .project-tag {
+      font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.08em;
+      text-transform: uppercase; padding: 0.3rem 0.65rem;
+      border: 1px solid var(--line); color: var(--muted);
+    }
+    .project-arrow {
+      font-size: 1.2rem; color: var(--muted);
+      transition: transform 0.25s, color 0.25s;
+    }
+
+    /* CONTACT */
+    #contact { background: var(--ink); color: #fff; position: relative; overflow: hidden; }
+    #contact::before {
+      content: ''; position: absolute; top: -150px; right: -150px;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(200,96,42,0.12) 0%, transparent 70%);
+    }
+    .contact-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; position: relative; }
+    .contact-left .section-label { color: var(--accent-light); }
+    .contact-left .section-label::before { background: var(--accent-light); }
+    .contact-big { font-size: clamp(2.2rem, 4.5vw, 5rem); font-weight: 300; line-height: 1.05; letter-spacing: -0.02em; margin-bottom: 1.5rem; }
+    .contact-big em { font-style: italic; color: var(--accent); }
+    .contact-subtext { color: rgba(255,255,255,0.45); max-width: 36ch; line-height: 1.85; font-size: 1rem; }
+    .contact-right { display: flex; flex-direction: column; justify-content: center; }
+    .contact-link {
+      display: flex; align-items: center; gap: 1.2rem;
+      text-decoration: none; color: #fff;
+      padding: 1.3rem 0; border-bottom: 1px solid rgba(255,255,255,0.08);
+      transition: color 0.2s; cursor: none;
+    }
+    .contact-link:hover { color: var(--accent); }
+    .contact-icon {
+      width: 38px; height: 38px; flex-shrink: 0;
+      border: 1px solid rgba(255,255,255,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem; font-family: var(--mono);
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .contact-link:hover .contact-icon { border-color: var(--accent); background: rgba(200,96,42,0.1); }
+    .contact-link-label { font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.4; margin-bottom: 0.1rem; }
+    .contact-link-value { font-size: 0.95rem; }
+    .contact-note { font-family: var(--mono); font-size: 0.55rem; color: rgba(255,255,255,0.2); margin-top: 0.15rem; }
+
+    footer {
+      background: var(--ink); color: rgba(255,255,255,0.25);
+      padding: 1.8rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    footer a { color: inherit; text-decoration: none; }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes scrollPulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.75s ease, transform 0.75s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.12s; }
+    .reveal-delay-2 { transition-delay: 0.22s; }
+    .reveal-delay-3 { transition-delay: 0.34s; }
+
+    @media (max-width: 900px) {
+      #hero { grid-template-columns: 1fr; padding: 6rem 1.5rem 3rem; }
+      .hero-right { display: none; }
+      #about { grid-template-columns: 1fr; gap: 3rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .project-row { grid-template-columns: 1fr auto; }
+      .project-row-meta { display: none; }
+      .contact-inner { grid-template-columns: 1fr; gap: 3rem; }
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { gap: 1.2rem; }
+      section { padding: 5rem 1.5rem; }
+      hr.divider { margin: 0 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo">KD</a>
+    <ul class="nav-links">
+      <li><a href="#about">About</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#work">Work</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-left">
+      <div class="hero-eyebrow">Frontend &amp; Backend Web Developer</div>
+      <h1 class="hero-name">Kelechi<br><em>David</em></h1>
+      <p class="hero-desc">
+        I build websites that look good and actually work — clean code, solid back-ends, smooth front-ends. PHP, WordPress, and landing pages are my thing.
+      </p>
+      <a href="#work" class="hero-cta">
+        See my work <span class="arrow">→</span>
+      </a>
+    </div>
+    <div class="hero-right">
+      <div class="hero-code-block">
+        <span class="code-comment">// Hello, I'm Kelechi</span><br>
+        <span class="code-keyword">const</span> <span class="code-var">dev</span> = {<br>
+        &nbsp;&nbsp;name: <span class="code-string">"Kelechi David"</span>,<br>
+        &nbsp;&nbsp;stack: [<span class="code-string">"PHP"</span>, <span class="code-string">"WordPress"</span>,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"HTML"</span>, <span class="code-string">"CSS"</span>, <span class="code-string">"JS"</span>],<br>
+        &nbsp;&nbsp;specialty: <span class="code-string">"Landing Pages"</span>,<br>
+        &nbsp;&nbsp;clientsHappy: <span class="code-keyword">true</span>,<br>
+        &nbsp;&nbsp;available: <span class="code-keyword">true</span><br>
+        };<br><br>
+        <span class="code-comment">// Open for new projects.</span>
+      </div>
+    </div>
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div>
+      <div class="section-label reveal">About me</div>
+      <h2 class="section-title reveal reveal-delay-1">I build things<br><em>that work</em></h2>
+      <div class="about-stats reveal reveal-delay-2">
+        <div>
+          <div class="stat-num">1<span>+</span></div>
+          <div class="stat-label">Year of Experience</div>
+        </div>
+        <div>
+          <div class="stat-num">2<span>+</span></div>
+          <div class="stat-label">Projects Delivered</div>
+        </div>
+        <div>
+          <div class="stat-num">100<span>%</span></div>
+          <div class="stat-label">Client Satisfaction</div>
+        </div>
+        <div>
+          <div class="stat-num">∞</div>
+          <div class="stat-label">Lines of Code</div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="about-body reveal">
+        <p>
+          I'm Kelechi David, a web developer who does both the front and back end. I build the part you see and the part that runs quietly behind it.
+        </p>
+        <p>
+          I'm still learning — and I'll always be honest about that — but the work I put out is clean, thoughtful, and built to actually do its job. PHP and WordPress are what I know best. I also build landing pages for businesses that need to turn visitors into customers.
+        </p>
+        <p>
+          Every client I've worked with has been happy with the result, and that's something I'm proud of. I take each project seriously, no matter how big or small.
+        </p>
+      </div>
+      <div class="skills-grid reveal reveal-delay-1">
+        <span class="skill-tag">PHP</span>
+        <span class="skill-tag">WordPress</span>
+        <span class="skill-tag">HTML5</span>
+        <span class="skill-tag">CSS3</span>
+        <span class="skill-tag">JavaScript</span>
+        <span class="skill-tag">MySQL</span>
+        <span class="skill-tag">Landing Pages</span>
+        <span class="skill-tag">Responsive Design</span>
+        <span class="skill-tag">Custom Themes</span>
+        <span class="skill-tag">cPanel / Hosting</span>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-label reveal">What I do</div>
+    <h2 class="section-title reveal reveal-delay-1">Here's how I<br><em>can help you</em></h2>
+    <div class="services-grid">
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon">⚙️</div>
+        <div class="service-name">Backend Development</div>
+        <div class="service-desc">I build the logic that keeps your site running — databases, user systems, form handling, and more. Mostly PHP and MySQL.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon">🖥️</div>
+        <div class="service-name">Frontend Development</div>
+        <div class="service-desc">Clean, responsive pages that look good on any screen. HTML, CSS, and JavaScript that make your site feel polished.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-icon">📄</div>
+        <div class="service-name">Landing Pages</div>
+        <div class="service-desc">Focused, well-designed pages built to turn visitors into customers. Clean layout, clear message, no fluff.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-1">
+        <div class="service-icon">🔧</div>
+        <div class="service-name">WordPress Development</div>
+        <div class="service-desc">Custom WordPress sites and themes — built to your needs, not just a template dropped on a page. I know WordPress well.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-2">
+        <div class="service-icon">📱</div>
+        <div class="service-name">Responsive Design</div>
+        <div class="service-desc">Every site I build works on phones, tablets, and desktops. No broken layouts — just clean design on every screen.</div>
+      </div>
+      <div class="service-card reveal reveal-delay-3">
+        <div class="service-icon">🚀</div>
+        <div class="service-name">Site Deployment</div>
+        <div class="service-desc">I handle hosting, domain setup, and going live — so you don't have to stress about the technical side of things.</div>
+      </div>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- WORK -->
+  <section id="work">
+    <div class="work-header">
+      <div class="section-label reveal">Selected work</div>
+      <h2 class="section-title reveal reveal-delay-1">Things I've<br><em>built</em></h2>
+    </div>
+
+    <div class="projects-list">
+      <a href="https://gobolchain.com" target="_blank" class="project-row reveal">
+        <div class="project-row-left">
+          <div class="project-row-title">Gobolchain Network</div>
+          <div class="project-row-desc">A blockchain platform for a startup founder — user login, tokenomics, roadmap, and whitepaper. Built from scratch and deployed live.</div>
+          <div class="project-row-tags">
+            <span class="project-tag">PHP</span>
+            <span class="project-tag">MySQL</span>
+            <span class="project-tag">HTML/CSS</span>
+            <span class="project-tag">JavaScript</span>
+          </div>
+        </div>
+        <div class="project-row-meta">2025 — Blockchain Platform</div>
+        <div class="project-arrow">→</div>
+      </a>
+
+      <a href="https://fortunemarketers.weebly.com" target="_blank" class="project-row reveal reveal-delay-1">
+        <div class="project-row-left">
+          <div class="project-row-title">Fortune Marketers</div>
+          <div class="project-row-desc">A clean business website for a forex signals and trading community — services, testimonials, and a sign-up flow.</div>
+          <div class="project-row-tags">
+            <span class="project-tag">HTML/CSS</span>
+            <span class="project-tag">JavaScript</span>
+            <span class="project-tag">Weebly</span>
+          </div>
+        </div>
+        <div class="project-row-meta">2024 — Business Website</div>
+        <div class="project-arrow">→</div>
+      </a>
+    </div>
+  </section>
+
+  <hr class="divider"/>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="contact-inner">
+      <div class="contact-left">
+        <div class="section-label reveal">Get in touch</div>
+        <div class="contact-big reveal reveal-delay-1">Got a project<br>in <em>mind?</em></div>
+        <p class="contact-subtext reveal reveal-delay-2">
+          Whether it's a new website, a landing page, or a WordPress build — send me a message and let's talk. I'm open to work.
+        </p>
+      </div>
+      <div class="contact-right reveal reveal-delay-2">
+
+        <a href="mailto:mbanahiad@gmail.com" class="contact-link">
+          <div class="contact-icon">✉</div>
+          <div>
+            <div class="contact-link-label">Email</div>
+            <div class="contact-link-value">mbanahiad@gmail.com</div>
+          </div>
+        </a>
+
+        <a href="tel:+2348145746723" class="contact-link">
+          <div class="contact-icon">☎</div>
+          <div>
+            <div class="contact-link-label">Phone</div>
+            <div class="contact-link-value">+234 814 574 6723</div>
+          </div>
+        </a>
+
+        <a href="https://github.com/k3lechi" target="_blank" class="contact-link">
+          <div class="contact-icon">gh</div>
+          <div>
+            <div class="contact-link-label">GitHub</div>
+            <div class="contact-link-value">Kelechi David</div>
+          </div>
+        </a>
+
+        <a href="https://instagram.com/k3lechi_0" target="_blank" class="contact-link">
+          <div class="contact-icon">ig</div>
+          <div>
+            <div class="contact-link-label">Instagram</div>
+            <div class="contact-link-value">K. David</div>
+          </div>
+        </a>
+
+<a href="Kelechi_David_Resume-1.pdf" download class="contact-link">
+<div class="contact-icon">rs</div>
+<div>
+<div class="contact-link-label">Resume</div>
+<div class="contact-link-value">Download my CV</div>
+</div>
+</a>
+
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 Kelechi David</span>
+    <span>Built with clean code</span>
+    <a href="#hero">Back to top ↑</a>
+  </footer>
+
+  <script>
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    let mx = 0, my = 0, rx = 0, ry = 0;
+    document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; });
+    (function loop() {
+      cursor.style.left = mx + 'px'; cursor.style.top = my + 'px';
+      rx += (mx - rx) * 0.12; ry += (my - ry) * 0.12;
+      ring.style.left = rx + 'px'; ring.style.top = ry + 'px';
+      requestAnimationFrame(loop);
+    })();
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    let lastY = 0;
+    const nav = document.querySelector('nav');
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      nav.style.transform = (y > lastY && y > 100) ? 'translateY(-100%)' : 'translateY(0)';
+      lastY = y;
+    });
+  </script>
+</body>
+</html>
